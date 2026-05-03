@@ -16,7 +16,7 @@ function JournalPage({ theme, themeName, toggleTheme }) {
     const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch('http://localhost:5000/entries', {
+      const response = await fetch('http://3.89.148.132:5001/entries', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

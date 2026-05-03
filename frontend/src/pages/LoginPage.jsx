@@ -10,8 +10,8 @@ function LoginPage({ theme, themeName, toggleTheme }) {
     e.preventDefault();
 
     const endpoint = isRegistering
-      ? 'http://localhost:5000/auth/register'
-      : 'http://localhost:5000/auth/login';
+      ? 'http://3.89.148.132:5001/auth/register'
+      : 'http://3.89.148.132:5001/auth/login';
 
     try {
       const response = await fetch(endpoint, {
