@@ -1,8 +1,21 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 function Navbar({ theme, themeName, toggleTheme }) {
   const navigate = useNavigate();
   const location = useLocation();
+  let isAdmin = false;
+
+  const token = localStorage.getItem('token');
+
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      isAdmin = decoded.is_admin === 1;
+    } catch (error) {
+      isAdmin = false;
+    } 
+  }
 
   function handleLogout() {
     localStorage.removeItem('token');
@@ -36,6 +49,9 @@ function Navbar({ theme, themeName, toggleTheme }) {
       <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
         <Link to="/journal" style={linkStyle('/journal')}>Journal</Link>
         <Link to="/history" style={linkStyle('/history')}>History</Link>
+	{isAdmin && (
+ 	 <Link to="/admin" style={linkStyle('/admin')}>Admin</Link>
+	)}
 
         <button
           onClick={toggleTheme}

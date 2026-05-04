@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import JournalPage from './pages/JournalPage';
 import HistoryPage from './pages/HistoryPage';
 import { themes } from './theme';
+import AdminPage from './pages/AdminPage';
 
 function App() {
   const token = localStorage.getItem('token');
@@ -46,6 +47,16 @@ function App() {
         element={
           token ? (
             <HistoryPage theme={theme} themeName={themeName} toggleTheme={toggleTheme} />
+          ) : (
+            <Navigate to="/" />
+          )
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          token ? (
+            <AdminPage theme={theme} themeName={themeName} toggleTheme={toggleTheme} />
           ) : (
             <Navigate to="/" />
           )

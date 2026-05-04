@@ -20,7 +20,7 @@ function HistoryPage({ theme, themeName, toggleTheme }) {
       const token = localStorage.getItem('token');
 
       try {
-        const response = await fetch('http://3.89.148.132:5001/entries', {
+        const response = await fetch('http://13.59.86.171:3001/entries', {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -63,7 +63,7 @@ function HistoryPage({ theme, themeName, toggleTheme }) {
     const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch(`http://3.89.148.132:5001/entries/${id}`, {
+      const response = await fetch(`http://13.59.86.171:3001/entries/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`
@@ -119,7 +119,7 @@ function HistoryPage({ theme, themeName, toggleTheme }) {
     const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch(`http://3.89.148.132:5001/entries/${id}`, {
+      const response = await fetch(`http://13.59.86.171:3001/entries/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
