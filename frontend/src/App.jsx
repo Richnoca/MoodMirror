@@ -3,8 +3,11 @@ import { useEffect, useState } from 'react';
 import LoginPage from './pages/LoginPage';
 import JournalPage from './pages/JournalPage';
 import HistoryPage from './pages/HistoryPage';
-import { themes } from './theme';
 import AdminPage from './pages/AdminPage';
+import PeoplePage from './pages/PeoplePage';
+import FeedPage from './pages/FeedPage';
+import { themes } from './theme';
+import NotificationsPage from './pages/NotificationsPage';
 
 function App() {
   const token = localStorage.getItem('token');
@@ -33,10 +36,40 @@ function App() {
         }
       />
       <Route
+        path="/notifications"
+        element={
+          token ? (
+            <NotificationsPage theme={theme} themeName={themeName} toggleTheme={toggleTheme} />
+          ) : (
+            <Navigate to="/" />
+          )
+         }
+      />
+      <Route
         path="/journal"
         element={
           token ? (
             <JournalPage theme={theme} themeName={themeName} toggleTheme={toggleTheme} />
+          ) : (
+            <Navigate to="/" />
+          )
+        }
+      />
+      <Route
+        path="/people"
+        element={
+          token ? (
+            <PeoplePage theme={theme} themeName={themeName} toggleTheme={toggleTheme} />
+          ) : (
+            <Navigate to="/" />
+          )
+        }
+      />
+      <Route
+        path="/feed"
+        element={
+          token ? (
+            <FeedPage theme={theme} themeName={themeName} toggleTheme={toggleTheme} />
           ) : (
             <Navigate to="/" />
           )

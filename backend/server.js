@@ -4,6 +4,11 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
 import entryRoutes from './routes/entries.js';
 import userRoutes from './routes/users.js';
+import followRoutes from './routes/follows.js';
+import likeRoutes from './routes/likes.js';
+import feedRoutes from './routes/feed.js';
+import commentRoutes from './routes/comments.js';
+import notificationRoutes from './routes/notifications.js';
 
 dotenv.config();
 
@@ -20,6 +25,11 @@ app.get('/', (req, res) => {
 app.use('/auth', authRoutes);
 app.use('/entries', entryRoutes);
 app.use('/users', userRoutes);
+app.use('/follows', followRoutes);
+app.use('/likes', likeRoutes);
+app.use('/feed', feedRoutes);
+app.use('/comments', commentRoutes);
+app.use('/notifications', notificationRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

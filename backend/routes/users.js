@@ -5,25 +5,34 @@ import adminMiddleware from '../middleware/adminMiddleware.js';
 
 const router = express.Router();
 
-router.get('/', authMiddleware, adminMiddleware, async (req, res) => {
+router.get('/discover', authMiddleware, async (req, res) => {
+  const currentUserId = req.user.id;
+
   try {
-    const [users] = await pool.query(`
+    const [users] = await pool.query(
+      `
       SELECT
         users.id,
         users.email,
         users.is_admin,
         users.created_at,
-        COUNT(entries.id) AS entry_count,
-        MAX(entries.created_at) AS last_entry_at
+        CASE
+          WHEN follows.id IS NULL THEN 0
+          ELSE 1
+        END AS is_following
       FROM users
-      LEFT JOIN entries ON users.id = entries.user_id
-      GROUP BY users.id, users.email, users.is_admin, users.created_at
-      ORDER BY users.id
-    `);
+      LEFT JOIN follows
+        ON follows.following_id = users.id
+        AND follows.follower_id = ?
+      WHERE users.id <> ?
+      ORDER BY users.email
+      `,
+      [currentUserId, currentUserId]
+    );
 
     res.json(users);
   } catch (error) {
-    console.error('Get users error:', error);
+    console.error('Discover users error:', error);
     res.status(500).json({ error: 'Failed to fetch users.' });
   }
 });

@@ -1,9 +1,40 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import { useEffect, useState } from 'react';
 
 function Navbar({ theme, themeName, toggleTheme }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [unreadCount, setUnreadCount] = useState(0);
+  const API_BASE = 'http://18.217.16.106:3001';
+
+useEffect(() => {
+  async function fetchUnreadCount() {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/notifications/unread-count`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setUnreadCount(Number(data.unread_count));
+      }
+    } catch (error) {
+      setUnreadCount(0);
+    }
+  }
+
+  fetchUnreadCount();
+}, [location.pathname]);
   let isAdmin = false;
 
   const token = localStorage.getItem('token');
@@ -49,6 +80,11 @@ function Navbar({ theme, themeName, toggleTheme }) {
       <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
         <Link to="/journal" style={linkStyle('/journal')}>Journal</Link>
         <Link to="/history" style={linkStyle('/history')}>History</Link>
+        <Link to="/people" style={linkStyle('/people')}>People</Link>
+	<Link to="/feed" style={linkStyle('/feed')}>Feed</Link>
+	<Link to="/notifications" style={linkStyle('/notifications')}>
+          Notifications{unreadCount > 0 ? ` (${unreadCount})` : ''}
+	</Link>
 	{isAdmin && (
  	 <Link to="/admin" style={linkStyle('/admin')}>Admin</Link>
 	)}
