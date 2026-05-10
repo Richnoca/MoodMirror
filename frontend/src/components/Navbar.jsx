@@ -6,7 +6,7 @@ function Navbar({ theme, themeName, toggleTheme }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [unreadCount, setUnreadCount] = useState(0);
-  const API_BASE = 'http://18.217.16.106:3001';
+  const API_BASE = 'http://18.222.199.18:3001';
 
 useEffect(() => {
   async function fetchUnreadCount() {

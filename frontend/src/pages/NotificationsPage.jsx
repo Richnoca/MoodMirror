@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 
-const API_BASE = 'http://18.217.16.106:3001';
+const API_BASE = 'http://18.222.199.18:3001';
 
 function NotificationsPage({ theme, themeName, toggleTheme }) {
   const [notifications, setNotifications] = useState([]);

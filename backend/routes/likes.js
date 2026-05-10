@@ -30,18 +30,22 @@ await pool.query(
 );
 
 if (entryOwnerId !== userId) {
-  await pool.query(
-    `
-    INSERT INTO notifications (recipient_id, actor_id, entry_id, type, message)
-    VALUES (?, ?, ?, 'like', ?)
-    `,
-    [
-      entryOwnerId,
-      userId,
-      entryId,
-      `${req.user.email} liked your journal entry.`
-    ]
-  );
+  try {
+    await pool.query(
+      `
+      INSERT INTO notifications (recipient_id, actor_id, entry_id, type, message)
+      VALUES (?, ?, ?, 'like', ?)
+      `,
+      [
+        entryOwnerId,
+        userId,
+        entryId,
+        `${req.user.email} liked your journal entry.`
+      ]
+    );
+  } catch (notificationError) {
+    console.error('Like notification error:', notificationError);
+  }
 }
 
 res.status(201).json({ message: 'Post liked successfully.' });  

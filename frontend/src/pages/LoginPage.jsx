@@ -10,8 +10,8 @@ function LoginPage({ theme, themeName, toggleTheme }) {
     e.preventDefault();
 
     const endpoint = isRegistering
-      ? 'http://18.217.16.106:3001/auth/register'
-      : 'http://18.217.16.106:3001/auth/login';
+      ? 'http://18.222.199.18:3001/auth/register'
+      : 'http://18.222.199.18:3001/auth/login';
 
     try {
       const response = await fetch(endpoint, {

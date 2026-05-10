@@ -5,6 +5,38 @@ import adminMiddleware from '../middleware/adminMiddleware.js';
 
 const router = express.Router();
 
+/*
+  GET /users
+  Admin-only route: get all users with basic activity stats
+*/
+router.get('/', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const [users] = await pool.query(`
+      SELECT
+        users.id,
+        users.email,
+        users.is_admin,
+        users.created_at,
+        COUNT(entries.id) AS entry_count,
+        MAX(entries.created_at) AS last_entry_at
+      FROM users
+      LEFT JOIN entries ON users.id = entries.user_id
+      GROUP BY users.id, users.email, users.is_admin, users.created_at
+      ORDER BY users.id
+    `);
+
+    res.json(users);
+  } catch (error) {
+    console.error('Get users error:', error);
+    res.status(500).json({ error: 'Failed to fetch users.' });
+  }
+});
+
+/*
+  GET /users/discover
+  Logged-in route: get all users except current user,
+  plus whether the current user follows each one
+*/
 router.get('/discover', authMiddleware, async (req, res) => {
   const currentUserId = req.user.id;
 
@@ -37,6 +69,10 @@ router.get('/discover', authMiddleware, async (req, res) => {
   }
 });
 
+/*
+  PATCH /users/:id/admin
+  Admin-only route: promote/demote a user
+*/
 router.patch('/:id/admin', authMiddleware, adminMiddleware, async (req, res) => {
   const { id } = req.params;
   const { is_admin } = req.body;

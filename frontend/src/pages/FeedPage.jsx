@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 
-const API_BASE = 'http://18.217.16.106:3001';
+const API_BASE = 'http://18.222.199.18:3001';
 
 function FeedPage({ theme, themeName, toggleTheme }) {
   const [posts, setPosts] = useState([]);
@@ -268,6 +268,36 @@ function FeedPage({ theme, themeName, toggleTheme }) {
                 <p style={{ marginTop: '18px', lineHeight: '1.6' }}>
                   {post.note || 'No note added.'}
                 </p>
+
+		{post.media_url && post.media_type?.startsWith('image/') && (
+  <img
+    src={`http://18.222.199.18:3001${post.media_url}`}
+    alt="Post media"
+    style={{
+      width: '100%',
+      height: 'auto',
+      objectFit: 'contain',
+      borderRadius: '14px',
+      marginTop: '16px',
+      marginBottom: '16px',
+      border: `1px solid ${theme.border}`
+    }}
+  />
+)}
+
+{post.media_url && post.media_type?.startsWith('video/') && (
+  <video
+    src={`http://18.222.199.18:3001${post.media_url}`}
+    controls
+    style={{
+      width: '100%',
+      borderRadius: '14px',
+      marginTop: '16px',
+      marginBottom: '16px',
+      border: `1px solid ${theme.border}`
+    }}
+  />
+)}
 
                 <div style={{ color: theme.subtext, marginBottom: '18px' }}>
                   Tag: {post.tag || 'None'} | Date: {new Date(post.date).toLocaleDateString()}

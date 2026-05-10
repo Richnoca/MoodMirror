@@ -20,7 +20,7 @@ function HistoryPage({ theme, themeName, toggleTheme }) {
       const token = localStorage.getItem('token');
 
       try {
-        const response = await fetch('http://18.217.16.106:3001/entries', {
+        const response = await fetch('http://18.222.199.18:3001/entries', {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -63,7 +63,7 @@ function HistoryPage({ theme, themeName, toggleTheme }) {
     const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch(`http://18.217.16.106:3001/entries/${id}`, {
+      const response = await fetch(`http://18.222.199.18:3001/entries/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`
@@ -119,7 +119,7 @@ function HistoryPage({ theme, themeName, toggleTheme }) {
     const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch(`http://18.217.16.106:3001/entries/${id}`, {
+      const response = await fetch(`http://18.222.199.18:3001/entries/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -386,6 +386,36 @@ function HistoryPage({ theme, themeName, toggleTheme }) {
                       <strong style={{ color: theme.subtext }}>Note:</strong>{' '}
                       {entry.note || 'No note'}
                     </p>
+
+                   {entry.media_url && entry.media_type?.startsWith('image/') && (
+  <img
+    src={`http://18.222.199.18:3001${entry.media_url}`}
+    alt="Journal entry media"
+    style={{
+      width: '100%',
+      height: 'auto',
+      objectFit: 'contain',
+      borderRadius: '14px',
+      marginTop: '16px',
+      marginBottom: '16px',
+      border: `1px solid ${theme.border}`
+    }}
+  />
+)}
+
+{entry.media_url && entry.media_type?.startsWith('video/') && (
+  <video
+    src={`http://18.222.199.18:3001${entry.media_url}`}
+    controls
+    style={{
+      width: '100%',
+      borderRadius: '14px',
+      marginTop: '16px',
+      marginBottom: '16px',
+      border: `1px solid ${theme.border}`
+    }}
+  />
+)}
 
                     <div style={{ marginTop: '12px' }}>
                       <button

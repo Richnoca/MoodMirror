@@ -19,12 +19,23 @@ router.get('/', authMiddleware, async (req, res) => {
 });
 
 router.post('/', authMiddleware, async (req, res) => {
-  const { date, mood, note, tag } = req.body;
+  const { date, mood, note, tag, media_url, media_type } = req.body;
 
   try {
     await pool.query(
-      'INSERT INTO entries (user_id, date, mood, note, tag) VALUES (?, ?, ?, ?, ?)',
-      [req.user.id, date, mood, note, tag]
+      `
+      INSERT INTO entries (user_id, date, mood, note, tag, media_url, media_type)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+      `,
+      [
+        req.user.id,
+        date,
+        mood,
+        note,
+        tag,
+        media_url || null,
+        media_type || null
+      ]
     );
 
     res.status(201).json({ message: 'Entry created successfully.' });
@@ -35,13 +46,26 @@ router.post('/', authMiddleware, async (req, res) => {
 });
 
 router.put('/:id', authMiddleware, async (req, res) => {
-  const { date, mood, note, tag } = req.body;
+  const { date, mood, note, tag, media_url, media_type } = req.body;
   const { id } = req.params;
 
   try {
     await pool.query(
-      'UPDATE entries SET date = ?, mood = ?, note = ?, tag = ? WHERE id = ? AND user_id = ?',
-      [date, mood, note, tag, id, req.user.id]
+      `
+      UPDATE entries
+      SET date = ?, mood = ?, note = ?, tag = ?, media_url = ?, media_type = ?
+      WHERE id = ? AND user_id = ?
+      `,
+      [
+        date,
+        mood,
+        note,
+        tag,
+        media_url || null,
+        media_type || null,
+        id,
+        req.user.id
+      ]
     );
 
     res.json({ message: 'Entry updated successfully.' });

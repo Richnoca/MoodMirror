@@ -19,6 +19,8 @@ router.get('/', authMiddleware, async (req, res) => {
         entries.note,
         entries.tag,
         entries.created_at,
+	entries.media_url,
+	entries.media_type,
         COUNT(DISTINCT likes.id) AS like_count,
         CASE
           WHEN my_likes.id IS NULL THEN 0
@@ -43,6 +45,8 @@ router.get('/', authMiddleware, async (req, res) => {
         entries.mood,
         entries.note,
         entries.tag,
+	entries.media_url,
+	entries.media_type,
         entries.created_at,
         my_likes.id
       ORDER BY entries.created_at DESC

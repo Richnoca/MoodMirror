@@ -2,33 +2,95 @@ import { useState } from 'react';
 import Navbar from '../components/Navbar';
 import { getMoodInfo } from '../moodUtils';
 
+const API_BASE = 'http://18.222.199.18:3001';
+
 function JournalPage({ theme, themeName, toggleTheme }) {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [mood, setMood] = useState('');
   const [note, setNote] = useState('');
   const [tag, setTag] = useState('');
+  const [mediaFile, setMediaFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState('');
   const [message, setMessage] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   const moodInfo = getMoodInfo(mood);
 
+  function handleMediaChange(e) {
+    const file = e.target.files[0];
+
+    if (!file) {
+      setMediaFile(null);
+      setPreviewUrl('');
+      return;
+    }
+
+    setMediaFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  }
+
+  async function uploadMedia(token) {
+    if (!mediaFile) {
+      return {
+        media_url: null,
+        media_type: null
+      };
+    }
+
+    const formData = new FormData();
+    formData.append('media', mediaFile);
+
+    const response = await fetch(`${API_BASE}/upload`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to upload media.');
+    }
+
+    return {
+      media_url: data.media_url,
+      media_type: data.media_type
+    };
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
+
     const token = localStorage.getItem('token');
+    setMessage('');
+    setIsSaving(true);
 
     try {
-      const response = await fetch('http://18.217.16.106:3001/entries', {
+      const uploadedMedia = await uploadMedia(token);
+
+      const response = await fetch(`${API_BASE}/entries`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ date, mood, note, tag })
+        body: JSON.stringify({
+          date,
+          mood,
+          note,
+          tag,
+          media_url: uploadedMedia.media_url,
+          media_type: uploadedMedia.media_type
+        })
       });
 
       const data = await response.json();
 
       if (!response.ok) {
         setMessage(data.error || 'Failed to save entry.');
+        setIsSaving(false);
         return;
       }
 
@@ -36,9 +98,13 @@ function JournalPage({ theme, themeName, toggleTheme }) {
       setMood('');
       setNote('');
       setTag('');
+      setMediaFile(null);
+      setPreviewUrl('');
+      setIsSaving(false);
     } catch (error) {
       console.error(error);
-      setMessage('Could not connect to server.');
+      setMessage(error.message || 'Could not connect to server.');
+      setIsSaving(false);
     }
   }
 
@@ -156,8 +222,48 @@ function JournalPage({ theme, themeName, toggleTheme }) {
             />
           </div>
 
+          <div style={{ marginBottom: '14px' }}>
+            <label style={labelStyle}>Add Image</label>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/gif,video/mp4,video/quicktime"
+              onChange={handleMediaChange}
+              style={inputStyle}
+            />
+
+	{previewUrl && mediaFile?.type?.startsWith('image/') && (
+  <img
+    src={previewUrl}
+    alt="Selected upload preview"
+    style={{
+      width: '100%',
+      height: 'auto',
+      objectFit: 'contain',
+      borderRadius: '12px',
+      marginTop: '12px',
+      border: `1px solid ${theme.border}`
+    }}
+  />
+)}
+
+{previewUrl && mediaFile?.type?.startsWith('video/') && (
+  <video
+    src={previewUrl}
+    controls
+    style={{
+      width: '100%',
+      borderRadius: '12px',
+      marginTop: '12px',
+      border: `1px solid ${theme.border}`
+    }}
+  />
+)}            
+
+          </div>
+
           <button
             type="submit"
+            disabled={isSaving}
             style={{
               width: '100%',
               padding: '12px',
@@ -166,10 +272,11 @@ function JournalPage({ theme, themeName, toggleTheme }) {
               background: theme.buttonPrimary,
               color: 'white',
               fontWeight: 'bold',
-              cursor: 'pointer'
+              cursor: isSaving ? 'not-allowed' : 'pointer',
+              opacity: isSaving ? 0.7 : 1
             }}
           >
-            Save Entry
+            {isSaving ? 'Saving...' : 'Save Entry'}
           </button>
         </form>
 
